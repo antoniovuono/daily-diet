@@ -1,10 +1,4 @@
-import Fastify from 'fastify'
-
-const app = Fastify()
-
-app.get('/', () => {
-  return 'Welcome to daily diet api'
-})
+import { app } from './app'
 
 app
   .listen({
