@@ -7,11 +7,13 @@
     "dev": "tsx watch src/server.ts",
     "knex": "node --no-warnings --loader tsx ./node_modules/.bin/knex",
     "lint": "eslint src --ext .ts --fix",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.2.2",
     "@types/node": "^20.11.19",
+    "@vitest/coverage-v8": "^1.3.0",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3",
     "vitest": "^1.3.0"
