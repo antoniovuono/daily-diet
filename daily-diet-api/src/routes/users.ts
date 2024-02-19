@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcrypt'
 import { knex } from '../database'
-import { createUserSchema } from '../schemas/createUserSchema'
+import { createUserSchema } from '../schemas/createUserSchemas'
 
 export const usersRoutes = async (app: FastifyInstance) => {
   app.post('/', async (request, reply) => {
