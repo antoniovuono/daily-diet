@@ -7,3 +7,8 @@ export const createUserSchema = z.object({
   password: z.string(),
   phone: z.string(),
 })
+
+export const authenticateSchema = z.object({
+  email: z.string().email(),
+  password: z.string(),
+})
