@@ -4,7 +4,7 @@ import { env } from '../envs'
 import { knex } from '../database'
 
 export const userAuthenticated = async (
-  request: FastifyRequest,
+  request: FastifyRequest & { user?: { id: string } },
   reply: FastifyReply,
 ) => {
   const { authorization } = request.headers
