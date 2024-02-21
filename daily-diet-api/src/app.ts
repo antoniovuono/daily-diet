@@ -14,8 +14,10 @@ app.register(authRoutes, {
   prefix: '/auth',
 })
 
-app
-  .register(mealsRoutes, {
-    prefix: '/meals',
-  })
-  .addHook('preHandler', userAuthenticated)
+app.register(async (mealsApp) => {
+  mealsApp
+    .register(mealsRoutes, {
+      prefix: '/meals',
+    })
+    .addHook('preHandler', userAuthenticated)
+})
