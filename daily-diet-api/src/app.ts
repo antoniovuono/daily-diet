@@ -1,7 +1,7 @@
 import Fastify from 'fastify'
 import { usersRoutes } from './routes/users'
 import { authRoutes } from './routes/auth'
-import { snacksRoutes } from './routes/snacks'
+import { mealsRoutes } from './routes/meals'
 import { userAuthenticated } from './middleware/userAuthenticated'
 
 export const app = Fastify()
@@ -15,7 +15,7 @@ app.register(authRoutes, {
 })
 
 app
-  .register(snacksRoutes, {
-    prefix: '/snacks',
+  .register(mealsRoutes, {
+    prefix: '/meals',
   })
   .addHook('preHandler', userAuthenticated)
