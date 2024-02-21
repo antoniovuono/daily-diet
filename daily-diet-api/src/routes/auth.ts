@@ -23,9 +23,10 @@ export const authRoutes = async (app: FastifyInstance) => {
     const secretToken = env.SECRET_TOKEN
 
     const jwtToken = jwt.sign({ id: user?.id }, secretToken, {
+      subject: user?.id,
       expiresIn: '7d',
     })
 
-    return reply.status(200).send({ email: user?.email, token: jwtToken })
+    return reply.status(201).send({ email: user?.email, token: jwtToken })
   })
 }
