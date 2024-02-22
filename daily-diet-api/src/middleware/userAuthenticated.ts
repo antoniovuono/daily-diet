@@ -4,7 +4,7 @@ import { env } from '../envs'
 import { knex } from '../database'
 
 export const userAuthenticated = async (
-  request: FastifyRequest & { user?: { id: string } },
+  request: FastifyRequest & { user?: string },
   reply: FastifyReply,
 ) => {
   const { authorization } = request.headers
@@ -25,7 +25,7 @@ export const userAuthenticated = async (
     }
 
     // Add user to request if you want to access it in your route handlers
-    request.user = user
+    request.user = user.id
   } catch (err) {
     return reply.status(401).send({ message: 'Invalid token' })
   }
