@@ -32,23 +32,35 @@ export const mealsRoutes = async (app: FastifyInstance) => {
     },
   )
 
-  app.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-    try {
-      const meals = await knex('meals').select('*')
+  app.get(
+    '/',
+    async (
+      request: FastifyRequest & { user?: string },
+      reply: FastifyReply,
+    ) => {
+      try {
+        const meals = await knex('meals')
+          .where({ user_id: request.user })
+          .select('*')
 
-      return reply.status(201).send(meals)
-    } catch (err) {
-      return reply
-        .status(500)
-        .send({ message: 'Failure to communicate with the database!"', err })
-    }
-  })
+        return reply.status(201).send(meals)
+      } catch (err) {
+        return reply
+          .status(500)
+          .send({ message: 'Failure to communicate with the database!"', err })
+      }
+    },
+  )
 
   app.get('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const { id } = mealIdSchema.parse(request.params)
 
       const meal = await knex('meals').where({ id }).first()
+
+      if (!meal) {
+        return reply.status(404).send({ message: 'Meal not found' })
+      }
 
       return reply.status(201).send(meal)
     } catch (err) {
@@ -73,7 +85,7 @@ export const mealsRoutes = async (app: FastifyInstance) => {
 
         await knex('meals').where({ id }).update(updateData)
 
-        return reply.status(201).send()
+        return reply.status(201).send({ message: 'Meal updated' })
       } catch (err) {
         return reply
           .status(500)
@@ -87,6 +99,12 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       const { id } = mealIdSchema.parse(request.params)
 
       await knex('meals').where({ id }).delete()
+
+      if (!id) {
+        return reply.status(404).send({ message: 'Meal not found' })
+      }
+
+      return reply.status(201).send({ message: 'Meal deleted' })
     } catch (err) {
       return reply
         .status(500)
