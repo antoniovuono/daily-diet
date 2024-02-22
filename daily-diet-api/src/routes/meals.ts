@@ -1,13 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { knex } from '../database'
 import { randomUUID } from 'node:crypto'
 import { mealIdSchema, mealsSchema } from '../schemas/mealsSchemas'
-
-interface MealProps {
-  name: string
-  description: string
-  diet_meal: boolean
-}
 
 export const mealsRoutes = async (app: FastifyInstance) => {
   app.post(
@@ -49,6 +44,20 @@ export const mealsRoutes = async (app: FastifyInstance) => {
     }
   })
 
+  app.get('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = mealIdSchema.parse(request.params)
+
+      const meal = await knex('meals').where({ id }).first()
+
+      return reply.status(201).send(meal)
+    } catch (err) {
+      return reply
+        .status(500)
+        .send({ message: 'Failure to communicate with the database!"', err })
+    }
+  })
+
   app.patch(
     '/update/:id',
     async (request: FastifyRequest, reply: FastifyReply) => {
@@ -56,11 +65,7 @@ export const mealsRoutes = async (app: FastifyInstance) => {
         const { name, description, dietMeal } = mealsSchema.parse(request.body)
         const { id } = mealIdSchema.parse(request.params)
 
-        const updateData: MealProps = {
-          name: '',
-          description: '',
-          diet_meal: false,
-        }
+        const updateData: any = {}
 
         if (name !== undefined) updateData.name = name
         if (description !== undefined) updateData.description = description
@@ -76,4 +81,16 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       }
     },
   )
+
+  app.delete('/:id', async (request: FastifyRequest, reply: FastifyReply) => {
+    try {
+      const { id } = mealIdSchema.parse(request.params)
+
+      await knex('meals').where({ id }).delete()
+    } catch (err) {
+      return reply
+        .status(500)
+        .send({ message: 'Failure to communicate with the database!"', err })
+    }
+  })
 }
