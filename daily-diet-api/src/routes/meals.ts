@@ -19,14 +19,6 @@ export const mealsRoutes = async (app: FastifyInstance) => {
 
         const { name, description, dietMeal } = mealsSchema.parse(request.body)
 
-        console.log({
-          id: randomUUID(),
-          name,
-          description,
-          dietMeal,
-          user_id: request.user,
-        })
-
         await knex('meals').insert({
           id: randomUUID(),
           name,
