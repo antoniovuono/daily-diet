@@ -119,14 +119,33 @@ export const mealsRoutes = async (app: FastifyInstance) => {
       reply: FastifyReply,
     ) => {
       try {
-        const meals = await knex('meals')
+        const totalMeals = await knex('meals')
           .where({ user_id: request.user })
           .select('*')
 
+        const { bestOnDietSequence } = totalMeals.reduce(
+          (acc, meal) => {
+            if (meal.diet_meal) {
+              acc.currentSequence += 1
+            } else {
+              acc.currentSequence = 0
+            }
+
+            if (acc.currentSequence > acc.bestOnDietSequence) {
+              acc.bestOnDietSequence = acc.currentSequence
+            }
+
+            return acc
+          },
+          { bestOnDietSequence: 0, currentSequence: 0 },
+        )
+
         return reply.status(201).send({
-          totalMeals: meals.length,
-          totalDietMeals: meals.filter((meal) => meal.diet_meal).length,
-          totalNonDietMeals: meals.filter((meal) => !meal.diet_meal).length,
+          totalMeals: totalMeals.length,
+          totalDietMeals: totalMeals.filter((meal) => meal.diet_meal).length,
+          totalNonDietMeals: totalMeals.filter((meal) => !meal.diet_meal)
+            .length,
+          bestOnDietSequence,
         })
       } catch (err) {
         return reply
