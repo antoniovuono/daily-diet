@@ -1,6 +1,10 @@
 import { config } from 'dotenv'
 import { envSchema } from '../schemas/envSchemas'
 
+if (process.env.NODE_ENV === 'test') {
+  config({ path: '.env.test' })
+}
+
 config()
 
 const _env = envSchema.safeParse(process.env)
