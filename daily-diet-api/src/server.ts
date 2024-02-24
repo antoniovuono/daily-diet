@@ -1,12 +1,13 @@
 import { app } from './app'
+import { env } from './envs'
 
 app
   .listen({
-    port: 3333,
+    port: env.PORT,
   })
   .then(() => {
-    console.log('Server is running on port 3333')
+    console.log(`Server is running on port ${env.PORT}`)
   })
   .catch((err) => {
-    console.log('Error starting server on port 3333', err)
+    console.log(`Error starting server on port ${env.PORT}`, err)
   })
