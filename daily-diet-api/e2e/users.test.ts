@@ -31,4 +31,38 @@ describe('Create User', () => {
       })
       .expect(201)
   })
+
+  it("shouldn't be able to create a new user with an existing email", async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: randomUUID(),
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    await request(app.server)
+      .post('/users/create-user')
+      .send({
+        id: randomUUID(),
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'jhon@test.com',
+        password: '123456',
+        phone: '123456789',
+      })
+      .expect(409)
+  })
+
+  it('should return 500 if there is an error', async () => {
+    await request(app.server)
+      .post('/users/create-user')
+      .send({
+        id: randomUUID(),
+        firstName: 'John',
+        lastName: 'Doe',
+      })
+      .expect(500)
+  })
 })
