@@ -14,7 +14,7 @@ describe('Meals', () => {
     await app.close()
   })
 
-  beforeEach(() => {
+  beforeEach(async () => {
     execSync('yarn run knex migrate:rollback')
     execSync('yarn run knex migrate:latest')
   })
@@ -44,21 +44,144 @@ describe('Meals', () => {
         dietMeal: false,
       })
       .set('Authorization', `Bearer ${token}`)
+      .expect(201)
   })
-  it.todo(
-    'should return 500 if there is an error on create meal route',
-    async () => {},
-  )
 
-  it.todo('should be able to list all user meals', async () => {})
-  it.todo(
-    'should return 500 if there is an error on list all meals route',
-    async () => {},
-  )
-  it.todo('should be able to get a user meal by id', async () => {})
+  it('should be able to list all user meals', async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: randomUUID(),
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    const authenticate = await request(app.server).post('/auth').send({
+      email: 'jhon@test.com',
+      password: '123456',
+    })
+
+    const { token } = authenticate.body
+
+    await request(app.server)
+      .get('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+  })
+
+  it('should be able to get a user meal by id', async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: 'ae1f8029-5ed0-42bf-9abb-10c7a29a72a7',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    const authenticate = await request(app.server).post('/auth').send({
+      email: 'jhon@test.com',
+      password: '123456',
+    })
+
+    const { token } = authenticate.body
+
+    const meals = await request(app.server)
+      .get('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+
+    const { id } = meals.body[0]
+
+    request(app.server)
+      .get(`/meals/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+  })
+
+  it('should be able to update a user meal by id', async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: 'ae1f8029-5ed0-42bf-9abb-10c7a29a72a7',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    const authenticate = await request(app.server).post('/auth').send({
+      email: 'jhon@test.com',
+      password: '123456',
+    })
+
+    const { token } = authenticate.body
+
+    const meals = await request(app.server)
+      .get('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+
+    const { id } = meals.body[0]
+
+    await request(app.server)
+      .patch(`/meals/update/${id}`)
+      .send({
+        name: 'Madeiro Bacon',
+        description: 'Janta no madero',
+        dietMeal: false,
+      })
+      .expect(201)
+      .set('Authorization', `Bearer ${token}`)
+  })
+  it('should be able to delete a user meal by id', async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: 'ae1f8029-5ed0-42bf-9abb-10c7a29a72a7',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    const authenticate = await request(app.server).post('/auth').send({
+      email: 'jhon@test.com',
+      password: '123456',
+    })
+
+    const { token } = authenticate.body
+
+    const meals = await request(app.server)
+      .get('/meals')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+
+    const { id } = meals.body[0]
+
+    request(app.server)
+      .delete(`/meals/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+  })
+  it('should be able to return a meal mtric routes', async () => {
+    await request(app.server).post('/users/create-user').send({
+      id: 'ae1f8029-5ed0-42bf-9abb-10c7a29a72a7',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'jhon@test.com',
+      password: '123456',
+      phone: '123456789',
+    })
+
+    const authenticate = await request(app.server).post('/auth').send({
+      email: 'jhon@test.com',
+      password: '123456',
+    })
+
+    const { token } = authenticate.body
+
+    request(app.server)
+      .get('/meals/metric')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(201)
+  })
 })
-
-it.todo(
-  'should return 500 if there is an error on list a specific user meals route',
-  async () => {},
-)
